@@ -3,6 +3,6 @@ charts/**/charts/*.tgz
 
 # IDEs
 .project
-charts/bugsink/.idea/
+.idea/
 *.tmproj
 .vscode/
