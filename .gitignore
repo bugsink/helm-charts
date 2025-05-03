@@ -1,0 +1,8 @@
+# Helm Subcharts
+charts/**/charts/*.tgz
+
+# IDEs
+.project
+charts/bugsink/.idea/
+*.tmproj
+.vscode/

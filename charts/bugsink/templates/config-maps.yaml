@@ -1,0 +1,49 @@
+{{- if (include "bugsink.envConfigMap.create" .) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "bugsink.envConfigMap.name" . }}
+  labels:
+    {{- include "bugsink.labels" . | nindent 4 }}
+data:
+  ALLOWED_HOSTS: "*"
+  {{- with .Values.baseUrl }}
+  BASE_URL: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.timezone }}
+  TIME_ZONE: {{ . | quote }}
+  {{- end }}
+  {{- if .Values.smtp.enabled }}
+  {{- with .Values.smtp }}
+  EMAIL_HOST: {{ .host | quote }}
+  {{- with .port }}
+  EMAIL_PORT: {{ . | quote }}
+  {{- end }}
+  {{- if .useTls }}
+  EMAIL_USE_TLS: "True"
+  {{- end }}
+  {{- if .useSsl }}
+  EMAIL_USE_SSL: "True"
+  {{- end }}
+  {{- with .timeout }}
+  EMAIL_TIMEOUT: {{ . | quote }}
+  {{- end }}
+  {{- with .defaultFrom }}
+  DEFAULT_FROM_EMAIL: {{ . | quote }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+{{- end }}
+---
+{{- if (include "bugsink.extraEnvConfigMap.create" .) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "bugsink.extraEnvConfigMap.name" . }}
+  labels:
+    {{ include "bugsink.labels" . | nindent 4 }}
+data:
+  {{- range $configKey, $configValue := .Values.extraEnv.configs }}
+  {{ $configKey }}: {{ $configValue | quote }}
+  {{- end }}
+{{- end }}

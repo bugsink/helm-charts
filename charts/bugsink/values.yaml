@@ -1,0 +1,213 @@
+### Bugsink Helm Chart Configurations
+
+# Base URL where the Bugsink instance is hosted.
+# Documentation: https://www.bugsink.com/docs/settings/#your-site
+# Default: "http://localhost:8000"
+# Example: "https://bugsink.example.com"
+baseUrl: ""
+
+# Secret key for cryptographic signing in Django.
+# Documentation: https://www.bugsink.com/docs/settings/#miscellaneous
+# Note: In most cases you don't need to provide a custom secret key here as this
+# chart automatically generates one for you.
+secretKey:
+  value: ""
+  existingSecret: ""
+  existingSecretKey: "secret-key"
+
+# Time Zone for displaying dates and times.
+# Documentation: https://www.bugsink.com/docs/settings/#display-settings
+# Default: "UTC"
+# Example: "Asia/Tehran"
+timezone: ""
+
+# An initial admin user which is created upon the first deployment.
+# Documentation: https://www.bugsink.com/docs/settings/#docker-specific-settings
+# Note: It's not necessarily required to provide a custom username and password
+# pair here as this chart automatically generates a user with the username "admin"
+# and a random password for you. A Kubectl command will be shown after the deployment
+# which can be used to get this password.
+admin:
+  # A basic authentication string containing both the username and password.
+  # Example: "admin:password"
+  auth: ""
+
+  existingSecret: ""
+  existingSecretKey: "auth"
+
+# SMTP email server for notification sending and administrative purposes such as
+# password reset.
+# Documentation: https://www.bugsink.com/docs/settings/#email
+smtp:
+  # Whether sending emails via the SMTP server is enabled or not.
+  enabled: false
+
+  # SMTP server host.
+  # Example: "smtp.example.com"
+  host: ""
+
+  # SMTP server port.
+  # Default: 587
+  port:
+
+  # Enable TLS for SMTP.
+  # Default: true
+  # Note: This is what's typically used for SMTP servers that use port 587; sometimes
+  # referred to as "STARTTLS".
+  useTls: ""
+
+  # Enable SSL for SMTP.
+  # Default: false
+  # Note: This is what's typically used for SMTP servers that use port 465; referred
+  # to as "SSL" or "implicit TLS".
+  useSsl: ""
+
+  # Timeout (in seconds) for sending emails.
+  # Default: 5
+  timeout:
+
+  # Default "from" email address for the emails.
+  # Default: "Bugsink <bugsink@example.org>"
+  # IMPORTANT: The default value is a placeholder. Change this to avoid potential
+  # bounces or spam issues.
+  defaultFrom: ""
+
+  # SMTP server username.
+  username: ""
+
+  # SMTP server password.
+  password: ""
+
+  # Name of an existing secret containing the SMTP server username and password.
+  existingSecret: ""
+
+  # Key in the above secret that holds the SMTP server username.
+  existingSecretUsernameKey: "username"
+
+  # Key in the above secret that holds the SMTP server password.
+  existingSecretPasswordKey: "password"
+
+image:
+  registry: docker.io
+  repository: bugsink/bugsink
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the app version.
+  tag: ""
+
+imagePullSecrets: [ ]
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: { }
+  name: ""
+
+podAnnotations: { }
+podLabels: { }
+podSecurityContext: { }
+securityContext: { }
+
+service:
+  type: ClusterIP
+  port: 8000
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: { }
+  hosts:
+    - host: ""
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: [ ]
+
+# Note: It is highly recommended to specify proper resources for your Bugsink
+# instance when running in production.
+resources: { }
+# requests:
+#   cpu: 1
+#   memory: 2Gi
+#   ephemeral-storage: 1Gi
+# limits:
+#   cpu: 2
+#   memory: 4Gi
+#   ephemeral-storage: 2Gi
+
+livenessProbe:
+  httpGet:
+    path: /accounts/login/
+    port: http
+  initialDelaySeconds: 10
+  failureThreshold: 50
+readinessProbe:
+  httpGet:
+    path: /accounts/login/
+    port: http
+  initialDelaySeconds: 10
+  failureThreshold: 50
+
+nodeSelector: { }
+tolerations: [ ]
+affinity: { }
+
+# PostgreSQL Database
+# Documentation: https://github.com/bitnami/charts/tree/main/bitnami/postgresql
+# IMPORTANT: It is recommended NOT to adjust any PostgreSQL configurations other than the
+# ones mentioned below. It is because the PostgreSQL chart is already configured in a way
+# to work properly with Bugsink, and any configuration change might cause unwanted issues.
+# - `postgresql.enabled`
+# - `postgresql.primary.resources`
+# - `postgresql.primary.persistence.storageClass`
+# - `postgresql.primary.persistence.size`
+postgresql:
+  enabled: true
+  auth:
+    enablePostgresUser: false
+    username: "bugsink"
+    database: "bugsink"
+  primary:
+    resources: { }
+    # requests:
+    #   cpu: 1
+    #   memory: 2Gi
+    #   ephemeral-storage: 1Gi
+    # limits:
+    #   cpu: 2
+    #   memory: 4Gi
+    #   ephemeral-storage: 2Gi
+    persistence:
+      # storageClass: ""
+      size: 5Gi
+  serviceBindings:
+    enabled: true
+
+externalDatabase:
+  url: ""
+  existingSecret: ""
+  existingSecretKey: "url"
+
+# Extra Environment Variables
+extraEnv:
+  # Non-secret variables which are stored in config maps.
+  configs: { }
+  # MY_NON_SECRET_ENV: my-non-secret-value
+
+  # Secret variables which are stored in secrets.
+  # Note: In production environments, supplying the secret ENVs via `secretRefs`
+  # is recommended. This is because it prevents sensitive data from being exposed
+  # in the `values.yaml` file. This is especially vital when the file is checked
+  # into version control.
+  secrets: { }
+  # MY_SECRET_ENV: my-secret-value
+
+  # Config map references whose data are passed to the deployment as environment
+  # variables.
+  configMapRefs: [ ]
+  # - name: my-config-map
+
+  # Secret references whose data are passed to the deployment as environment variables.
+  secretRefs: [ ]
+  # - name: my-secret
