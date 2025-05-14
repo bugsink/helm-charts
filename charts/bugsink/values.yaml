@@ -2,6 +2,8 @@
 
 # Base URL where the Bugsink instance is hosted.
 # Documentation: https://www.bugsink.com/docs/settings/#your-site
+# Note: Don't forget to define a host for this URL in the "ingress" section if you
+# want to access your Bugsink instance using ingress controllers.
 # Default: "http://localhost:8000"
 # Example: "https://bugsink.example.com"
 baseUrl: ""
@@ -9,10 +11,18 @@ baseUrl: ""
 # Secret key for cryptographic signing in Django.
 # Documentation: https://www.bugsink.com/docs/settings/#miscellaneous
 # Note: In most cases you don't need to provide a custom secret key here as this
-# chart automatically generates one for you.
+# chart automatically generates and manages one for you.
 secretKey:
+  # Secret key in plain text.
+  # Note: It is highly recommended to use the "existingSecret" section for providing
+  # a custom secret key as this prevents sensitive information from being exposed
+  # in your "values.yaml" file.
   value: ""
+
+  # Name of an existing secret holding the secret key.
   existingSecret: ""
+
+  # Key in the above secret that holds the secret key.
   existingSecretKey: "secret-key"
 
 # Time Zone for displaying dates and times.
@@ -32,7 +42,10 @@ admin:
   # Example: "admin:password"
   auth: ""
 
+  # Name of an existing secret holding the admin authentication string.
   existingSecret: ""
+
+  # Key in the above secret that holds the admin authentication string.
   existingSecretKey: "auth"
 
 # SMTP email server for notification sending and administrative purposes such as
@@ -78,7 +91,7 @@ smtp:
   # SMTP server password.
   password: ""
 
-  # Name of an existing secret containing the SMTP server username and password.
+  # Name of an existing secret holding the SMTP server username and password.
   existingSecret: ""
 
   # Key in the above secret that holds the SMTP server username.
@@ -124,8 +137,8 @@ ingress:
           pathType: ImplementationSpecific
   tls: [ ]
 
-# Note: It is highly recommended to specify proper resources for your Bugsink
-# instance when running in production.
+# Note: It is highly recommended to specify proper resources for your Bugsink instance
+# when running in production.
 resources: { }
 # requests:
 #   cpu: 1
@@ -142,6 +155,7 @@ livenessProbe:
     port: http
   initialDelaySeconds: 10
   failureThreshold: 50
+
 readinessProbe:
   httpGet:
     path: /accounts/login/
@@ -154,14 +168,7 @@ tolerations: [ ]
 affinity: { }
 
 # PostgreSQL Database
-# Documentation: https://github.com/bitnami/charts/tree/main/bitnami/postgresql
-# IMPORTANT: It is recommended NOT to adjust any PostgreSQL configurations other than the
-# ones mentioned below. It is because the PostgreSQL chart is already configured in a way
-# to work properly with Bugsink, and any configuration change might cause unwanted issues.
-# - `postgresql.enabled`
-# - `postgresql.primary.resources`
-# - `postgresql.primary.persistence.storageClass`
-# - `postgresql.primary.persistence.size`
+# Documentation: https://github.com/bitnami/charts/tree/postgresql/16.6.7/bitnami/postgresql
 postgresql:
   enabled: true
   auth:
@@ -182,32 +189,43 @@ postgresql:
       # storageClass: ""
       size: 5Gi
   serviceBindings:
+    # IMPORTANT: Do not disable service bindings as it's required for this chart.
     enabled: true
 
+# External PostgreSQL or MySQL database to use for Bugsink.
+# Documentation: https://www.bugsink.com/docs/settings/#database
+# IMPORTANT: Do not forget to disable the built-in PostgreSQL chart by setting
+# "postgresql.enabled" to false if you want to use an external database.
 externalDatabase:
+  # Database URL in plain text.
+  # Note: It is highly recommended to use the "existingSecret" section for providing
+  # the database URL as this prevents sensitive information from being exposed
+  # in your "values.yaml" file.
   url: ""
+
+  # Name of an existing secret holding the database URL.
   existingSecret: ""
+
+  # Key in the above secret that holds the database URL.
   existingSecretKey: "url"
 
-# Extra Environment Variables
+# Extra environment variables to pass to the application.
 extraEnv:
-  # Non-secret variables which are stored in config maps.
+  # Non-secret variables which are stored in a config map.
   configs: { }
   # MY_NON_SECRET_ENV: my-non-secret-value
 
-  # Secret variables which are stored in secrets.
-  # Note: In production environments, supplying the secret ENVs via `secretRefs`
-  # is recommended. This is because it prevents sensitive data from being exposed
-  # in the `values.yaml` file. This is especially vital when the file is checked
-  # into version control.
+  # Secret variables which are stored in a secret object.
+  # Note: It is highly recommended to use the "secretRefs" section for passing
+  # secret variables as this prevents sensitive information from being exposed
+  # in your "values.yaml" file.
   secrets: { }
   # MY_SECRET_ENV: my-secret-value
 
-  # Config map references whose data are passed to the deployment as environment
-  # variables.
+  # Existing config maps holding the environment variables.
   configMapRefs: [ ]
   # - name: my-config-map
 
-  # Secret references whose data are passed to the deployment as environment variables.
+  # Existing secrets holding the environment variables.
   secretRefs: [ ]
   # - name: my-secret

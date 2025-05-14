@@ -1,0 +1,8 @@
+Your Bugsink instance was deployed successfully!
+{{- if and (not .Values.admin.auth) (not .Values.admin.existingSecret) }}
+> Execute the following command to access the initial admin user's credentials:
+    $ kubectl get secret/{{ include "bugsink.fullname" . }} -n {{ .Release.Namespace }} -o jsonpath='{.data.CREATE_SUPERUSER}' | base64 -d
+{{- end }}
+{{- if not .Values.resources }}
+> WARNING: The "resources" section is not set. It is highly recommended to set the "resources" section for production installations.
+{{- end }}

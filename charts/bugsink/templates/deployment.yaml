@@ -3,139 +3,88 @@ kind: Deployment
 metadata:
   name: {{ include "bugsink.fullname" . }}
   labels:
-    {{ include "bugsink.labels" . | nindent 4 }}
+    {{- include "bugsink.labels" . | nindent 4 }}
 spec:
   replicas: 1
   strategy:
     type: Recreate
   selector:
     matchLabels:
-      {{ include "bugsink.selectorLabels" . | nindent 6 }}
+      {{- include "bugsink.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
       annotations:
-        {{ toYaml . | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{ include "bugsink.labels" . | nindent 8 }}
+        {{- include "bugsink.labels" . | nindent 8 }}
         {{- with .Values.podLabels }}
-        {{ toYaml . | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
-        {{ toYaml . | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "bugsink.serviceAccount.name" . }}
+      {{- with .Values.podSecurityContext }}
       securityContext:
-        {{ toYaml .Values.podSecurityContext | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.postgresql.enabled }}
+      initContainers:
+        - name: wait-for-postgresql
+          image: "{{ .Values.image.registry }}/postgres:17"
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |
+              until pg_isready -d "$DATABASE_URL" -q; do
+                sleep 5
+              done
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- include "bugsink.env" . | nindent 10 }}
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
+          {{- with .Values.securityContext }}
           securityContext:
-            {{ toYaml .Values.securityContext | nindent 12 }}
-          image: {{ include "bugsink.image" . }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
-          startupProbe:
-            {{- toYaml .Values.startupProbe | nindent 12 }}
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
             {{- toYaml .Values.readinessProbe | nindent 12 }}
+          {{- with .Values.resources }}
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           {{- with .Values.volumeMounts }}
           volumeMounts:
             {{ toYaml . | nindent 12 }}
           {{- end }}
-          env:
-            {{- with .Values.secretKey }}
-            {{- if .existingSecret }}
-            - name: SECRET_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .existingSecret }}
-                  key: {{ .existingSecretKey }}
-            {{- end }}
-            {{- end }}
-            {{- if .Values.admin.existingSecret }}
-            - name: CREATE_SUPERUSER
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.admin.existingSecret }}
-                  key: {{ .Values.admin.existingSecretKey }}
-            {{- end }}
-            {{- with .Values.smtp }}
-            {{- if and .enabled .existingSecret }}
-            - name: EMAIL_HOST_USER
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .existingSecret }}
-                  key: {{ .existingSecretUsernameKey }}
-            - name: EMAIL_HOST_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .existingSecret }}
-                  key: {{ .existingSecretPasswordKey }}
-            {{- end }}
-            {{- end }}
-            {{- with .Values.externalDatabase }}
-            {{- if .existingSecret }}
-            - name: DATABASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .existingSecret }}
-                  key: {{ .existingSecretKey }}
-            {{- end }}
-            {{- end }}
-            {{- if .Values.postgresql.enabled }}
-            - name: DATABASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: {{ printf "%s-svcbind-custom-user" (include "bugsink.postgresql.fullname" .) }}
-                  key: uri
-            {{- end }}
-          {{- if or (include "bugsink.envConfigMap.create" .) (include "bugsink.extraEnvConfigMap.create" .) (include "bugsink.envSecret.create" .) (include "bugsink.extraEnvSecret.create" .) .Values.extraEnv.configMapRefs .Values.extraEnv.secretRefs }}
-          envFrom:
-            {{- if (include "bugsink.envConfigMap.create" .) }}
-            - configMapRef:
-                name: {{ include "bugsink.envConfigMap.name" . }}
-            {{- end }}
-            {{- if (include "bugsink.extraEnvConfigMap.create" .) }}
-            - configMapRef:
-                name: {{ include "bugsink.extraEnvConfigMap.name" . }}
-            {{- end }}
-            {{- if (include "bugsink.envSecret.create" .) }}
-            - secretRef:
-                name: {{ include "bugsink.envSecret.name" . }}
-            {{- end }}
-            {{- if (include "bugsink.extraEnvSecret.create" .) }}
-            - secretRef:
-                name: {{ include "bugsink.extraEnvSecret.name" . }}
-            {{- end }}
-            {{- range .Values.extraEnv.configMapRefs }}
-            - configMapRef:
-                name: {{ .name }}
-            {{- end }}
-            {{- range .Values.extraEnv.secretRefs }}
-            - secretRef:
-                name: {{ .name }}
-            {{- end }}
-          {{- end }}
+          {{- include "bugsink.env" . | nindent 10 }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
-        {{ toYaml . | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.affinity }}
       affinity:
-        {{ toYaml . | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
-        {{ toYaml . | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       dnsPolicy: ClusterFirst
