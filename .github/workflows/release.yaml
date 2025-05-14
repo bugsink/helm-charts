@@ -12,10 +12,12 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
+
       - name: Set up Helm
         uses: azure/setup-helm@v3
         with:
           version: v3.15.4
+
       - name: Package charts
         run: |
           mkdir -p packaged_charts
@@ -25,9 +27,11 @@ jobs:
               helm package "$dir" -d packaged_charts
             fi
           done
+
       - name: Generate index.yaml
         run: |
           helm repo index packaged_charts --url https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
