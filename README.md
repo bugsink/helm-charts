@@ -20,7 +20,7 @@ Helm is a tool for managing Kubernetes charts. Charts are packages of pre-config
 To install Helm, refer to the [Helm install guide](https://github.com/helm/helm#install) and ensure that the `helm`
 binary is in the `PATH` of your shell.
 
-## Quick Start
+## Usage
 
 To start using Bugsink Helm charts, you first need to add the Bugsink Helm chart repository to your list of Helm
 repositories. To do this, execute the following command in your terminal:
@@ -52,8 +52,8 @@ helm install bugsink bugsink/bugsink \
 ```
 
 Refer to the Bugsink chart [values](https://github.com/bugsink/helm-charts/blob/main/charts/bugsink/values.yaml) file
-for configurations.
+for configuration options.
 
-**WARNING**: The installed Bugsink instance using the above command is not exposed to the internet and is only available
-from within the cluster. For exposing your Bugsink instance, you can choose between a few options such as ingress, load
-balancer and a node-port. This can be specified in your `values.yaml` file.
+**WARNING**: The instance deployed with the command above is **not** exposed to the internet and is only accessible from
+within the cluster. To expose your Bugsink instance, you can choose one of several options—such as an Ingress, a
+LoadBalancer service, or a NodePort service—and specify it in your `values.yaml` file.
