@@ -5,7 +5,7 @@
 
 Helm charts for deploying Bugsink and its related applications on Kubernetes using [Helm](https://github.com/helm/helm).
 
-## Before you begin
+## Before You Begin
 
 ### Prerequisites
 
