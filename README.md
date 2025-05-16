@@ -1,9 +1,7 @@
 ## Bugsink Helm Charts
 
 [![GitHub License](https://img.shields.io/github/license/bugsink/helm-charts)](https://github.com/bugsink/helm-charts/blob/main/LICENSE)
-[![GitHub Tests](https://github.com/bugsink/helm-charts/workflows/test/badge.svg)](https://github.com/bugsink/helm-charts)
-
-[![GitHub Release](https://img.shields.io/github/v/release/bugsink/helm-charts?filter=bugsink/*)](https://github.com/bugsink/helm-charts/tree/main/charts/bugsink)
+[![GitHub Tests](https://img.shields.io/github/actions/workflow/status/bugsink/helm-charts/test.yaml?branch=main&label=tests)](https://github.com/bugsink/helm-charts/actions/workflows/test.yaml?query=branch%3Amain++)
 
 Helm charts for deploying Bugsink and its related applications on Kubernetes using [Helm](https://github.com/helm/helm).
 
@@ -13,7 +11,7 @@ Helm charts for deploying Bugsink and its related applications on Kubernetes usi
 
 - A running Kubernetes cluster
 - Kubectl installed and configured for that cluster
-- Helm installed (See [here](#helm) for details on Helm.)
+- Helm installed (See [here](#helm) for details on Helm)
 
 ### Helm
 
@@ -45,7 +43,7 @@ helm install my-release bugsink/my-chart
 
 ### Installing Bugsink
 
-To install [Bugsink](https://www.bugsink.com) using its Helm chart, execute the following command:
+To install [Bugsink](https://www.bugsink.com) using Helm, execute the following command:
 
 ```console
 helm install bugsink bugsink/bugsink \
