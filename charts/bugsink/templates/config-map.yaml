@@ -17,8 +17,8 @@ data:
   {{- with .Values.smtp.port }}
   EMAIL_PORT: {{ . | quote }}
   {{- end }}
-  EMAIL_USE_TLS: {{ ternary "True" "False" .Values.smtp.useTls }}
-  EMAIL_USE_SSL: {{ ternary "True" "False" .Values.smtp.useSsl }}
+  EMAIL_USE_TLS: {{ ternary "True" "False" .Values.smtp.useTls | quote }}
+  EMAIL_USE_SSL: {{ ternary "True" "False" .Values.smtp.useSsl | quote }}
   {{- with .Values.smtp.timeout }}
   EMAIL_TIMEOUT: {{ . | quote }}
   {{- end }}
