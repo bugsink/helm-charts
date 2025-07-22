@@ -2,7 +2,7 @@ apiVersion: v2
 name: bugsink
 description: Helm chart for deploying Bugsink on Kubernetes
 type: application
-version: 0.1.1
+version: 0.1.2
 appVersion: 1.5.4
 home: https://www.bugsink.com
 icon: https://github.com/bugsink.png
