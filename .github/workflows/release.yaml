@@ -7,8 +7,10 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-${{ vars.UBUNTU_VERSION }}
     name: Build and package Helm charts
+    permissions:
+      contents: read
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
@@ -16,7 +18,7 @@ jobs:
       - name: Set up Helm
         uses: azure/setup-helm@v3
         with:
-          version: v3.15.4
+          version: v${{ vars.HELM_VERSION }}
 
       - name: Package charts
         run: |
@@ -28,9 +30,22 @@ jobs:
             fi
           done
 
+      - name: Fetch existing index.yaml from gh-pages
+        run: |
+          git config --global init.defaultBranch main
+          git clone --depth 1 --branch gh-pages https://github.com/${{ github.repository }} gh-pages
+          cp gh-pages/index.yaml packaged_charts/ || true
+
       - name: Generate index.yaml
         run: |
-          helm repo index packaged_charts --url https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+          if [ -f packaged_charts/index.yaml ]; then
+            helm repo index packaged_charts \
+              --url https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }} \
+              --merge packaged_charts/index.yaml
+          else
+            helm repo index packaged_charts \
+              --url https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+          fi
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -39,7 +54,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-${{ vars.UBUNTU_VERSION }}
     name: Deploy to GitHub Pages
     permissions:
       pages: write
