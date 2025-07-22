@@ -11,6 +11,8 @@ jobs:
     name: Build and package Helm charts
     permissions:
       contents: read
+    env:
+      GITHUB_PAGES_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
@@ -30,24 +32,16 @@ jobs:
             fi
           done
 
-      - name: Fetch existing index.yaml from gh-pages
-        run: |
-          git config --global init.defaultBranch main
-          git clone --depth 1 --branch gh-pages https://github.com/${{ github.repository }} gh-pages
-          cp gh-pages/index.yaml packaged_charts/ || true
-
       - name: Generate index.yaml
         run: |
+          curl -fL ${{ env.GITHUB_PAGES_URL }}/index.yaml -o packaged_charts/index.yaml || true
           if [ -f packaged_charts/index.yaml ]; then
-            helm repo index packaged_charts \
-              --url https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }} \
-              --merge packaged_charts/index.yaml
+            helm repo index packaged_charts --url ${{ env.GITHUB_PAGES_URL }} --merge packaged_charts/index.yaml
           else
-            helm repo index packaged_charts \
-              --url https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+            helm repo index packaged_charts --url ${{ env.GITHUB_PAGES_URL }}
           fi
 
-      - name: Upload artifact
+      - name: Upload packaged charts artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./packaged_charts
