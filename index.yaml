@@ -1,0 +1,32 @@
+apiVersion: v1
+entries:
+  bugsink:
+  - apiVersion: v2
+    appVersion: 1.5.4
+    created: "2025-09-01T18:34:03.19848798Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 16.6.7
+    description: Helm chart for deploying Bugsink on Kubernetes
+    digest: 527044f44106f055431b3ad8e01d8f14fc7b0f46eeb87c99f497dba54cf01c04
+    home: https://www.bugsink.com
+    icon: https://github.com/bugsink.png
+    keywords:
+    - bugsink
+    - helm
+    - kubernetes
+    - docker
+    maintainers:
+    - email: aminvassefpoor@gmail.com
+      name: Amin Vassefpoor
+    name: bugsink
+    sources:
+    - https://github.com/bugsink/helm-charts
+    - https://github.com/bugsink/bugsink
+    type: application
+    urls:
+    - https://github.com/bugsink/helm-charts/releases/download/bugsink-0.1.2/bugsink-0.1.2.tgz
+    version: 0.1.2
+generated: "2025-09-01T18:34:03.198496957Z"
