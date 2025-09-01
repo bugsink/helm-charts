@@ -1,9 +1,6 @@
 name: Test Helm Charts
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
