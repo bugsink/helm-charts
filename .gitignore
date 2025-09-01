@@ -1,8 +1,0 @@
-# Helm Subcharts
-charts/**/charts/*.tgz
-
-# IDEs
-.project
-.idea/
-*.tmproj
-.vscode/
