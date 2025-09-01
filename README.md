@@ -1,7 +1,7 @@
 ## Bugsink Helm Charts
 
 [![GitHub License](https://img.shields.io/github/license/bugsink/helm-charts)](https://github.com/bugsink/helm-charts/blob/main/LICENSE)
-[![GitHub Tests](https://img.shields.io/github/actions/workflow/status/bugsink/helm-charts/test.yaml?branch=main&label=tests)](https://github.com/bugsink/helm-charts/actions/workflows/test.yaml?query=branch%3Amain++)
+[![GitHub Tests](https://img.shields.io/github/actions/workflow/status/bugsink/helm-charts/release-charts.yaml?branch=main&label=tests)](https://github.com/bugsink/helm-charts/actions/workflows/release-charts.yaml?query=branch%3Amain++)
 
 Helm charts for deploying Bugsink and its related applications on Kubernetes using [Helm](https://github.com/helm/helm).
 
