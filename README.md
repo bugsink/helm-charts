@@ -1,5 +1,7 @@
 ## Bugsink Helm Charts
 
+WARNING! These helm-charts are community-contributed (not provided by the Bugsink team). This might mean they are incomplete/outdated (as of writing, the version number is lagging considerably)
+
 [![GitHub License](https://img.shields.io/github/license/bugsink/helm-charts)](https://github.com/bugsink/helm-charts/blob/main/LICENSE)
 [![GitHub Tests](https://img.shields.io/github/actions/workflow/status/bugsink/helm-charts/release-charts.yaml?branch=main&label=tests)](https://github.com/bugsink/helm-charts/actions/workflows/release-charts.yaml?query=branch%3Amain++)
 
