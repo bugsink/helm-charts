@@ -229,3 +229,19 @@ extraEnv:
   # Existing secrets holding the environment variables.
   secretRefs: [ ]
   # - name: my-secret
+
+# Additional volumes to add to the Pod spec.
+volumes: []
+# - name: my-emptydir-volume
+#   emptyDir: {}
+# - name: my-configmap-volume
+#   configMap:
+#     name: my-configmap
+
+# Additional volume mounts to add to the container.
+volumeMounts: []
+# - name: my-emptydir-volume
+#   mountPath: /mnt/data
+# - name: my-configmap-volume
+#   mountPath: /etc/config
+#   readOnly: true
