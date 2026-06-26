@@ -72,9 +72,13 @@ spec:
           {{- end }}
           {{- with .Values.volumeMounts }}
           volumeMounts:
-            {{ toYaml . | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
           {{- include "bugsink.env" . | nindent 10 }}
+      {{- with .Values.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
