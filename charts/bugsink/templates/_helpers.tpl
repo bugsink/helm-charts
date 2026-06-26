@@ -41,9 +41,11 @@ app.kubernetes.io/instance: {{ .Release.Name }}
   {{- end }}
 {{- end }}
 
-{{- define "bugsink.secret.create" }}
-{{- ternary true false (or (not .Values.secretKey.existingSecret) (and .Values.smtp.enabled (not .Values.smtp.existingSecret)) (not .Values.admin.existingSecret) (and .Values.externalDatabase.url (not .Values.externalDatabase.existingSecret)) (not (not .Values.extraEnv.secrets))) }}
-{{- end }}
+{{- define "bugsink.secret.create" -}}
+{{- if or (not .Values.secretKey.existingSecret) (and .Values.smtp.enabled (not .Values.smtp.existingSecret)) (not .Values.admin.existingSecret) (and .Values.externalDatabase.url (not .Values.externalDatabase.existingSecret)) .Values.extraEnv.secrets -}}
+true
+{{- end -}}
+{{- end -}}
 
 {{- define "bugsink.env" -}}
 env:
